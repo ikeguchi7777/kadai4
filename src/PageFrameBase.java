@@ -78,14 +78,14 @@ class LogArea extends JScrollPane {
 		instance = this;
 	}
 
-	public static void addLogLine(String txt) {
+	public static void println(String txt) {
 		if (instance != null)
 			instance.area.append(txt + "\n");
 		else
 			System.out.println(txt);
 	}
 
-	public static void addLog(String txt) {
+	public static void print(String txt) {
 		if (instance != null)
 			instance.area.append(txt);
 		else

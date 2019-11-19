@@ -11,17 +11,18 @@ public class RuleBaseSystem {
 			System.out.println("Example:");
 			System.out.println(" \"?x is b\" and \"?x is c\" are queries");
 			System.out.println("  %java RuleBaseSystem \"?x is b,?x is c\"");
-		
+			
+			fm = new FileManager();
+			ArrayList<Rule> rules = fm.loadRules("data.txt");
+			// ArrayList rules = fm.loadRules("AnimalWorld.data");
+			ArrayList<String> wm = fm.loadWm("dataWm.txt");
+			// ArrayList wm = fm.loadWm("AnimalWorldWm.data");
+			rb = new RuleBase(rules, wm);
 		//} else {
 		while(true){
 			System.out.println("Enter Search Pattern:");
 			Scanner stdIn = new Scanner(System.in);
-			fm = new FileManager();
-			ArrayList<Rule> rules = fm.loadRules("CarShop.data");
-			// ArrayList rules = fm.loadRules("AnimalWorld.data");
-			ArrayList<String> wm = fm.loadWm("CarShopWm.data");
-			// ArrayList wm = fm.loadWm("AnimalWorldWm.data");
-			rb = new RuleBase(rules, wm);
+
 			String str = stdIn.nextLine();
 			if(str.equals("exit"))break;
 			StringTokenizer st = new StringTokenizer(str, ",");
@@ -30,6 +31,7 @@ public class RuleBaseSystem {
 				queries.add(st.nextToken());
 			}
 			rb.backwardChain(queries);
+			
 		}
 	}
 }
@@ -276,6 +278,7 @@ class FileManager {
 				while (token != StreamTokenizer.TT_EOL) {
 					line = line + st.sval + " ";
 					token = st.nextToken();
+					
 				}
 				wm.add(line.trim());
 			}

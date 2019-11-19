@@ -8,13 +8,15 @@ import java.io.*;
 public class RuleBaseSystem {
   static RuleBase rb;
   public static void main(String args[]){
+    Scanner scan = new Scanner(System.in);
     rb = new RuleBase();
     rb.forwardChain();
     while(true){
       System.out.print("Enter Search Pattern:");
-      String query = stdIn.nextLine();
-      if(query.equals("exit"))
-      break;
+      String query = scan.nextLine();
+      if(query.equals("exit")){
+        break;
+      }
       for(String st:rb.wm.assertions){
         (new Unifier()).unify(st,query);
       }
@@ -29,7 +31,7 @@ public class RuleBaseSystem {
 */
 class WorkingMemory {
   ArrayList<String> assertions;
-
+  Scanner scan = new Scanner(System.in);
   WorkingMemory(){
     assertions = new ArrayList<String>();
   }
@@ -126,6 +128,7 @@ class WorkingMemory {
 */
 class RuleBase {
   String fileName;
+  String dataFilename;
   String pattern;
   FileReader f;
   StreamTokenizer st;
@@ -140,7 +143,9 @@ class RuleBase {
     wm = new WorkingMemory();
     fm = new FileManager();
 
-    ArrayList<String> wms = fm.loadWm("CarShopWm.data"); //ワーキングメモリの取り込み
+    System.out.print("Enter Data-Filename:");
+    dataFilename = scan.nextLine();
+    ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
     for(String str : wms){
       wm.addAssertion(str);
     }
@@ -156,16 +161,17 @@ class RuleBase {
 rules = new ArrayList<Rule>();
 loadRules(fileName);
 
-while (true) {
+/*while (true) {
   System.out.println("Enter Search Pattern:");
-  String pattern = stdin.nextLine();
-  if (pattern.equals("exit"))
-  break;
+  String pattern = scan.nextLine();
+  if (pattern.equals("exit")){
+    break;
+  }
   (new Unifier()).search(pattern);
   for (String string : Unifier.getVarSets())
   System.out.println(string);
-}
-stdin.close();
+}*/
+scan.close();
 }
 
 /**
@@ -568,5 +574,4 @@ class Unifier {
     // 先頭が ? なら変数
     return str1.startsWith("?");
   }
-
 }

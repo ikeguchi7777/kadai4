@@ -8,12 +8,12 @@ import java.io.*;
 public class RuleBaseSystem {
   static RuleBase rb;
   public static void main(String args[]){
-    Scanner scan = new Scanner(System.in);
+    Scanner stdIn = new Scanner(System.in);
     rb = new RuleBase();
     rb.forwardChain();
     while(true){
       System.out.print("Enter Search Pattern:");
-      String query = scan.nextLine();
+      String query = stdIn.nextLine();
       if(query.equals("exit")){
         break;
       }
@@ -162,16 +162,16 @@ rules = new ArrayList<Rule>();
 loadRules(fileName);
 
 /*while (true) {
-  System.out.println("Enter Search Pattern:");
-  String pattern = scan.nextLine();
-  if (pattern.equals("exit")){
-    break;
-  }
-  (new Unifier()).search(pattern);
-  for (String string : Unifier.getVarSets())
-  System.out.println(string);
+System.out.println("Enter Search Pattern:");
+String pattern = scan.nextLine();
+if (pattern.equals("exit")){
+break;
+}
+(new Unifier()).search(pattern);
+for (String string : Unifier.getVarSets())
+System.out.println(string);
 }*/
-scan.close();
+//scan.close();
 }
 
 /**
@@ -208,6 +208,7 @@ public void forwardChain(){
     System.out.println("Working Memory"+wm);
   } while(newAssertionCreated);
   System.out.println("No rule produces a new assertion");
+  System.out.println();
 }
 
 private String instantiate(String thePattern, HashMap theBindings){

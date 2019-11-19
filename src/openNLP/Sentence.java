@@ -10,11 +10,6 @@ import java.util.List;
 
 import opennlp.tools.chunker.ChunkerME;
 import opennlp.tools.chunker.ChunkerModel;
-import opennlp.tools.cmdline.parser.ParserTool;
-import opennlp.tools.parser.Parse;
-import opennlp.tools.parser.Parser;
-import opennlp.tools.parser.ParserFactory;
-import opennlp.tools.parser.ParserModel;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 
@@ -25,7 +20,7 @@ public class Sentence extends ArrayList<Chunk> {
 
 	public static void main(String[] args) {
 		Sentence sent = new Sentence();
-		String txt = "what is it?";
+		String txt = "There are 3 apples.";
 		List<String> tList = splitSentences(txt);
 		String[] rStrings = new String[tList.size()];
 		tList.toArray(rStrings);

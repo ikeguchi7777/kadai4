@@ -10,4 +10,8 @@ public class Morpheme {
 		this.word = word;
 		model = Lemmatizer.Lemmatize(word, tag);
 	}
+
+	public String getWord() {
+		return word;
+	}
 }

@@ -12,4 +12,12 @@ public class Chunk extends ArrayList<Morpheme> {
 		super();
 		CTag=tag;
 	}
+
+	public String getMorphemes(){
+		String line = "";
+		for (Morpheme word : Chunk.this) {
+			line+="".concat(word.getWord()).concat(" ");
+		}
+		return line;
+	}
 }

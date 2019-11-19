@@ -25,12 +25,13 @@ public class Sentence extends ArrayList<Chunk> {
 
 	public static void main(String[] args) {
 		Sentence sent = new Sentence();
-		String txt = "what is it?";
+		String txt = "Jiro has a hobby of playing baseball.";
 		List<String> tList = splitSentences(txt);
 		String[] rStrings = new String[tList.size()];
 		tList.toArray(rStrings);
 		sent.analysis(rStrings);
 		System.out.println(tList);
+		System.out.println(sent.getChunklist());
 		// http://sourceforge.net/apps/mediawiki/opennlp/index.php?title=Parser#Training_Tool
 		/*InputStream is;
 		try {
@@ -84,7 +85,7 @@ public class Sentence extends ArrayList<Chunk> {
 			Chunk last = null;
 
 			for (int i = 0; i < tokens.length; i++) {
-				if (!tags[i].equals("IN") && chunks[i].startsWith("B")) {
+				if (chunks[i].startsWith("B")&&(i==0||!tags[i-1].equals("IN"))) {
 					last = new Chunk(chunks[i].split("-")[1]);
 					add(last);
 				}
@@ -141,4 +142,11 @@ public class Sentence extends ArrayList<Chunk> {
 		return sentences;
 	}
 
+	String getChunklist(){
+		String result = "";
+		for (Chunk chunk : this) {
+			result+="".concat("/").concat(chunk.getMorphemes());
+		}
+		return result;
+	}
 }

@@ -23,10 +23,6 @@ import opennlp.tools.postag.POSTaggerME;
  */
 public class Sentence extends ArrayList<Chunk> {
 
-	Parse top;
-
-	static String encoding = "UTF-8";
-
 	public static void main(String[] args) {
 		Sentence sent = new Sentence();
 		String txt = "what is it?";
@@ -36,7 +32,7 @@ public class Sentence extends ArrayList<Chunk> {
 		sent.analysis(rStrings);
 		System.out.println(tList);
 		// http://sourceforge.net/apps/mediawiki/opennlp/index.php?title=Parser#Training_Tool
-		InputStream is;
+		/*InputStream is;
 		try {
 			is = new FileInputStream("model/en-parser-chunking.bin");
 			ParserModel model = new ParserModel(is);
@@ -55,64 +51,63 @@ public class Sentence extends ArrayList<Chunk> {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
-
-
-
+		*/
 		/*
-		 * (TOP (S (NP (EX There)) (VP (VBZ is) (NP (NP (JJ little) (NN coreference) (NN resolution) (NN documentation)) (PP (IN for) (NP (NNP OpenNLP.)))))))
+		 * (TOP (S (NP (EX There)) (VP (VBZ is) (NP (NP (JJ little) (NN coreference) (NN
+		 * resolution) (NN documentation)) (PP (IN for) (NP (NNP OpenNLP.)))))))
 		 *
 		 */
 	}
 
 	public void analysis(String[] tokens) {
-		try{
+		try {
 
-            // Parts-Of-Speech Tagging
-            // reading parts-of-speech model to a stream
-            InputStream posModelIn = new FileInputStream("model/en-pos-maxent.bin");
-            // loading the parts-of-speech model from stream
-            POSModel posModel = new POSModel(posModelIn);
-            // initializing the parts-of-speech tagger with model
-            POSTaggerME posTagger = new POSTaggerME(posModel);
-            // Tagger tagging the tokens
-            String tags[] = posTagger.tag(tokens);
+			// Parts-Of-Speech Tagging
+			// reading parts-of-speech model to a stream
+			InputStream posModelIn = new FileInputStream("model/en-pos-maxent.bin");
+			// loading the parts-of-speech model from stream
+			POSModel posModel = new POSModel(posModelIn);
+			// initializing the parts-of-speech tagger with model
+			POSTaggerME posTagger = new POSTaggerME(posModel);
+			// Tagger tagging the tokens
+			String tags[] = posTagger.tag(tokens);
 
-            // reading the chunker model
-            InputStream ins = new FileInputStream("model/en-chunker.bin");
-            // loading the chunker model
-            ChunkerModel chunkerModel = new ChunkerModel(ins);
-            // initializing chunker(maximum entropy) with chunker model
-            ChunkerME chunker = new ChunkerME(chunkerModel);
-            // chunking the given sentence : chunking requires sentence to be tokenized and pos tagged
-            String[] chunks = chunker.chunk(tokens,tags);
-            Chunk last=null;
+			// reading the chunker model
+			InputStream ins = new FileInputStream("model/en-chunker.bin");
+			// loading the chunker model
+			ChunkerModel chunkerModel = new ChunkerModel(ins);
+			// initializing chunker(maximum entropy) with chunker model
+			ChunkerME chunker = new ChunkerME(chunkerModel);
+			// chunking the given sentence : chunking requires sentence to be tokenized and
+			// pos tagged
+			String[] chunks = chunker.chunk(tokens, tags);
+			Chunk last = null;
 
-            for(int i=0;i<tokens.length;i++) {
-            	if(!tags[i].equals("IN") && chunks[i].startsWith("B")) {
-            		last = new Chunk(chunks[i].split("-")[1]);
-            		add(last);
-            	}
-            	last.add(new Morpheme(tags[i], tokens[i]));
-            }
+			for (int i = 0; i < tokens.length; i++) {
+				if (!tags[i].equals("IN") && chunks[i].startsWith("B")) {
+					last = new Chunk(chunks[i].split("-")[1]);
+					add(last);
+				}
+				last.add(new Morpheme(tags[i], tokens[i]));
+			}
 
-            // printing the results
-            System.out.println("\nChunker Example in Apache OpenNLP\nPrinting chunks for the given sentence...");
-            System.out.println("\nTOKEN - POS_TAG - CHUNK_ID\n-------------------------");
-            for(int i=0;i< chunks.length;i++){
-                System.out.println(tokens[i]+" - "+tags[i]+" - "+chunks[i]);
-            }
-        } catch (FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			// printing the results
+			System.out.println("\nChunker Example in Apache OpenNLP\nPrinting chunks for the given sentence...");
+			System.out.println("\nTOKEN - POS_TAG - CHUNK_ID\n-------------------------");
+			for (int i = 0; i < chunks.length; i++) {
+				System.out.println(tokens[i] + " - " + tags[i] + " - " + chunks[i]);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-
 
 	/**
 	 * 文に区切るためのセパレータ
 	 */
-	static List<String> separators = Arrays.asList(new String[] {"！", "!", "？", "?", ",", ".", "\n" });
+	static List<String> separators = Arrays.asList(new String[] { " ", "　", "！", "!", "？", "?", ",", ".", "\n" });
 
 	/**
 	 * 文に区切る
@@ -123,7 +118,7 @@ public class Sentence extends ArrayList<Chunk> {
 	static List<String> splitSentences(String text) {
 		List<String> sentences = new ArrayList<>();
 		List<Integer> splitID = new ArrayList<>();
-		//List<String> sentences = new ArrayList<String>();
+		// List<String> sentences = new ArrayList<String>();
 		for (String separator : separators) {
 			if (text.contains(separator)) {
 				int index = text.indexOf(separator);
@@ -137,7 +132,9 @@ public class Sentence extends ArrayList<Chunk> {
 		int from = 0;
 		for (Integer integer : splitID) {
 			sentences.add(text.substring(from, integer));
-			sentences.add(text.substring(integer, integer + 1));
+			String getChar = text.substring(integer, integer + 1);
+			if (!(getChar.equals(" ") || getChar.equals("　")))
+				sentences.add(getChar);
 
 			from = integer + 1;
 		}

@@ -10,6 +10,18 @@ public class RuleBaseSystem {
   public static void main(String args[]){
     Scanner stdIn = new Scanner(System.in);
     rb = new RuleBase();
+    System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
+    int j = stdIn.nextInt();
+    switch(j){
+      case 1:
+      rb.addRules();
+      break;
+      case 2:
+      rb.deleteRules();
+      break;
+      case 3:
+      break;
+    }
     rb.forwardChain();
     while(true){
       System.out.print("Enter Search Pattern:");
@@ -138,12 +150,12 @@ class RuleBase {
 
   RuleBase(){
     Scanner scan = new Scanner(System.in);
-    System.out.print("Enter filename:"); // ファイル名の入力
+    System.out.print("Enter data-filename:"); // ファイル名の入力
     fileName = scan.nextLine();
     wm = new WorkingMemory();
     fm = new FileManager();
 
-    System.out.print("Enter Data-Filename:");
+    System.out.print("Enter workingmemory-filename:");
     dataFilename = scan.nextLine();
     ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
     for(String str : wms){
@@ -158,19 +170,8 @@ class RuleBase {
   wm.addAssertion(as);
 }
 }*/
-rules = new ArrayList<Rule>();
+rules = new ArrayList<>();
 loadRules(fileName);
-
-/*while (true) {
-System.out.println("Enter Search Pattern:");
-String pattern = scan.nextLine();
-if (pattern.equals("exit")){
-break;
-}
-(new Unifier()).search(pattern);
-for (String string : Unifier.getVarSets())
-System.out.println(string);
-}*/
 //scan.close();
 }
 
@@ -228,6 +229,44 @@ private String instantiate(String thePattern, HashMap theBindings){
 private boolean var(String str1){
   // 先頭が ? なら変数
   return str1.startsWith("?");
+}
+
+//追加箇所
+void addRules(){
+  String name = null;
+  ArrayList<String> antecedents = null;
+  String consequent = null;
+
+  Scanner scan = new Scanner(System.in);
+  System.out.println("--- Add Rule !!! ---");
+  System.out.print("Enter RuleName:");
+  name = scan.nextLine();
+  System.out.print("Enter antecedent:");
+  antecedents = new ArrayList<>();
+  while(true){
+    String a = scan.nextLine();
+    if(a.equals("finish")) break;
+    antecedents.add(a);
+  }
+  System.out.print("Enter consequent:");
+  consequent = scan.nextLine();
+
+  rules.add(new Rule(name,antecedents,consequent));
+}
+
+void deleteRules(){
+  Scanner scan = new Scanner(System.in);
+  String name = null;
+
+  System.out.println("--- Delete Rule !!! ---");
+  System.out.print("Enter RuleName:");
+  name = scan.nextLine();
+  for(int i=0; i<rules.size();i++){
+    if(rules.get(i).getName().equals(name)){
+      rules.remove(i);
+      i--;
+    }
+  }
 }
 
 private void loadRules(String theFileName){

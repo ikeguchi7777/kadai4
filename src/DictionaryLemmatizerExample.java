@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
+import GUI.LogArea;
 import opennlp.tools.cmdline.parser.ParserTool;
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.parser.Parse;

@@ -1,3 +1,4 @@
+package GUI;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +30,7 @@ class SearchPanel extends PagePanelBase {
 		text1.addActionListener(searchActionListener);
 		button.addActionListener(searchActionListener);
 	}
-	
+
 	private void Search(String text) {
 		LogArea.println("ここで検索："+text);
 	}

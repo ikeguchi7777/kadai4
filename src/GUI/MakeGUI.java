@@ -1,3 +1,4 @@
+package GUI;
 public class MakeGUI {
 
 	public static void main(String[] args) {

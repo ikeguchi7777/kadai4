@@ -1,5 +1,15 @@
-import java.util.*;
-import java.io.*;
+package kadai4.BackwordChain;
+
+import java.io.FileReader;
+import java.io.Serializable;
+import java.io.StreamTokenizer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+import GUI.LogArea;
 
 public class RuleBaseSystem {
   static RuleBase rb;
@@ -7,22 +17,23 @@ public class RuleBaseSystem {
   public static void main(String args[]){
     Scanner scan = new Scanner(System.in);
     //if(args.length != 1){
-    //  System.out.println("Usage: %java RuleBaseSystem [query strings]");
-    //  System.out.println("Example:");
-    //  System.out.println(" \"?x is b\" and \"?x is c\" are queries");
-    //  System.out.println("  %java RuleBaseSystem \"?x is b,?x is c\"");
+    //  LogArea.println("Usage: %java RuleBaseSystem [query strings]");
+    //  LogArea.println("Example:");
+    //  LogArea.println(" \"?x is b\" and \"?x is c\" are queries");
+    //  LogArea.println("  %java RuleBaseSystem \"?x is b,?x is c\"");
     //} else {
     fm = new FileManager();
-    System.out.print("Enter data-filename:");
+    LogArea.print("Enter data-filename:");
     String datafilename = scan.nextLine();
-    System.out.print("Enter workingmemory-filename:");
+    LogArea.print("Enter workingmemory-filename:");
     String wmfilename = scan.nextLine();
     ArrayList<Rule> rules = fm.loadRules(datafilename);
     //ArrayList rules = fm.loadRules("AnimalWorld.data");
     ArrayList<String> wm    = fm.loadWm(wmfilename);
     //ArrayList wm    = fm.loadWm("AnimalWorldWm.data");
     rb = new RuleBase(rules,wm);
-    System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
+
+    LogArea.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
     int j = scan.nextInt();
     switch(j){
       case 1:
@@ -35,7 +46,7 @@ public class RuleBaseSystem {
       break;
     }
     scan = new Scanner(System.in);
-    System.out.print("Enter Search pattern:");
+    LogArea.print("Enter Search pattern:");
     String pattern = scan.nextLine();
 
     StringTokenizer st = new StringTokenizer(pattern,",");
@@ -67,23 +78,23 @@ class RuleBase implements Serializable{
   }
 
   public void backwardChain(ArrayList<String> hypothesis){
-    System.out.println("Hypothesis:"+hypothesis);
+    LogArea.println("Hypothesis:"+hypothesis);
     ArrayList<String> orgQueries = (ArrayList)hypothesis.clone();
     //HashMap<String,String> binding = new HashMap<String,String>();
     HashMap<String,String> binding = new HashMap<String,String>();
     if(matchingPatterns(hypothesis,binding)){
-      System.out.println("Yes");
-      System.out.println(binding);
+      LogArea.println("Yes");
+      LogArea.println(binding.toString());
       // 最終的な結果を基のクェリーに代入して表示する
       for(int i = 0 ; i < orgQueries.size() ; i++){
         String aQuery = (String)orgQueries.get(i);
-        System.out.println("binding: "+binding);
+        LogArea.println("binding: "+binding);
         String anAnswer = instantiate(aQuery,binding);
-        System.out.println("Query: "+aQuery);
-        System.out.println("Answer:"+anAnswer);
+        LogArea.println("Query: "+aQuery);
+        LogArea.println("Answer:"+anAnswer);
       }
     } else {
-      System.out.println("No");
+      LogArea.println("No");
     }
   }
 
@@ -114,9 +125,9 @@ class RuleBase implements Serializable{
           orgBinding.put(key,value);
         }
         int tmpPoint = matchingPatternOne(firstPattern,theBinding,cPoint);
-        System.out.println("tmpPoint: "+tmpPoint);
+        LogArea.println("tmpPoint: "+tmpPoint);
         if(tmpPoint != -1){
-          System.out.println("Success:"+firstPattern);
+          LogArea.println("Success:"+firstPattern);
           if(matchingPatterns(thePatterns,theBinding)){
             //成功
             return true;
@@ -161,8 +172,8 @@ private int matchingPatternOne(String thePattern,HashMap<String,String> theBindi
       if((new Unifier()).unify(thePattern,
       (String)wm.get(i),
       theBinding)){
-        System.out.println("Success WM");
-        System.out.println((String)wm.get(i)+" <=> "+thePattern);
+        LogArea.println("Success WM");
+        LogArea.println((String)wm.get(i)+" <=> "+thePattern);
         return i+1;
       }
     }
@@ -181,8 +192,8 @@ private int matchingPatternOne(String thePattern,HashMap<String,String> theBindi
       if((new Unifier()).unify(thePattern,
       (String)aRule.getConsequent(),
       theBinding)){
-        System.out.println("Success RULE");
-        System.out.println("Rule:"+aRule+" <=> "+thePattern);
+        LogArea.println("Success RULE");
+        LogArea.println("Rule:"+aRule+" <=> "+thePattern);
         // さらにbackwardChaining
         ArrayList<String> newPatterns = aRule.getAntecedents();
         if(matchingPatterns(newPatterns,theBinding)){
@@ -221,7 +232,7 @@ private String instantiate(String thePattern, HashMap<String,String> theBindings
     String tmp = st.nextToken();
     if(var(tmp)){
       result = result + " " + (String)theBindings.get(tmp);
-      System.out.println("tmp: "+tmp+", result: "+result);
+      LogArea.println("tmp: "+tmp+", result: "+result);
     } else {
       result = result + " " + tmp;
     }
@@ -241,17 +252,17 @@ void addRules(){
   String consequent = null;
 
   Scanner scan = new Scanner(System.in);
-  System.out.println("--- Add Rule !!! ---");
-  System.out.print("Enter RuleName:");
+  LogArea.println("--- Add Rule !!! ---");
+  LogArea.print("Enter RuleName:");
   name = scan.nextLine();
-  System.out.print("Enter antecedent:");
+  LogArea.print("Enter antecedent:");
   antecedents = new ArrayList<>();
   while(true){
     String a = scan.nextLine();
     if(a.equals("finish")) break;
     antecedents.add(a);
   }
-  System.out.print("Enter consequent:");
+  LogArea.print("Enter consequent:");
   consequent = scan.nextLine();
 
   rules.add(new Rule(name,antecedents,consequent));
@@ -261,8 +272,8 @@ void deleteRules(){
   Scanner scan = new Scanner(System.in);
   String name = null;
 
-  System.out.println("--- Delete Rule !!! ---");
-  System.out.print("Enter RuleName:");
+  LogArea.println("--- Delete Rule !!! ---");
+  LogArea.print("Enter RuleName:");
   name = scan.nextLine();
   for(int i=0; i<rules.size();i++){
     if(rules.get(i).getName().equals(name)){
@@ -310,12 +321,12 @@ class FileManager {
           new Rule(name,antecedents,consequent));
           break;
           default:
-          System.out.println(token);
+          LogArea.println(((Integer)token).toString());
           break;
         }
       }
     } catch(Exception e){
-      System.out.println(e);
+      LogArea.println(e.toString());
     }
     return rules;
   }
@@ -338,7 +349,7 @@ class FileManager {
         wm.add(line.trim());
       }
     } catch(Exception e){
-      System.out.println(e);
+      LogArea.println(e.toString());
     }
     return wm;
   }

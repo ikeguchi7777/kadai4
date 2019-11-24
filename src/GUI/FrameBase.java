@@ -1,3 +1,4 @@
+package GUI;
 import javax.swing.JFrame;
 
 class FrameBase extends JFrame{

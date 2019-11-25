@@ -197,38 +197,15 @@ Enter Search Pattern:exit
 私は、ルールを追加できるメソッドaddRulesと削除できるメソッドdeleteRulesを作成した。
 まず、addRulesを示す。
 \begin{lstlisting}[caption=addRulesメソッド]
-void addRules(){
-  String name = null;
-  ArrayList<String> antecedents = null;
-  String consequent = null;
-
-  Scanner scan = new Scanner(System.in);
-  System.out.println("--- Add Rule !!! ---");
-  System.out.print("Enter RuleName:");
-  name = scan.nextLine();
-  System.out.print("Enter antecedent:");
-  antecedents = new ArrayList<>();
-  while(true){
-    String a = scan.nextLine();
-    if(a.equals("finish")) break;
-    antecedents.add(a);
-  }
-  System.out.print("Enter consequent:");
-  consequent = scan.nextLine();
-
-  rules.add(new Rule(name,antecedents,consequent));
+void addRules(String name,ArrayList<String> antecedents,String consequent){
+rules.add(new Rule(name,antecedents,consequent));
+}
 }
 \end{lstlisting}
-ルール名、条件、結果を標準入力で入力する。ルール名はString、条件はArrayList、結果はString型であり、入力されたあとルールを格納しているrulesに追加する。条件は、「finish」と入力されるまでいくつでも追加することができる。
+ルール名、条件、結果を引数とし、その要素をまとめてルールを格納しているArrayListであるrulesに格納する。
 次に、ルールを削除するdeleteRulesを示す。
 \begin{lstlisting}[caption=deleteRulesメソッド]
-void deleteRules(){
-  Scanner scan = new Scanner(System.in);
-  String name = null;
-
-  System.out.println("--- Delete Rule !!! ---");
-  System.out.print("Enter RuleName:");
-  name = scan.nextLine();
+void deleteRules(String name){
   for(int i=0; i<rules.size();i++){
     if(rules.get(i).getName().equals(name)){
       rules.remove(i);
@@ -236,24 +213,49 @@ void deleteRules(){
     }
   }
 }
-\end{lstlisting}
-ルールを削除する際はルール名のみを標準入力から読み込む。rules.get(i).getName()により、ルール名を順に呼び出し、入力されたルール名と一致したとき、rules.remove()により、要素を削除する。
-
-ルールの追加、削除するかを選択できるよう、メインメソッドに以下も追加した。
-\begin{lstlisting}
-System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
-int j = stdIn.nextInt();
-switch(j){
-  case 1:
-  rb.addRules();
-  break;
-  case 2:
-  rb.deleteRules();
-  break;
-  case 3:
-  break;
 }
 \end{lstlisting}
+ルールを削除する際はルール名のみを引数とする。rules.get(i).getName()により、ルール名を順に呼び出し、入力されたルール名と一致したとき、rules.remove()により、要素を削除する。
+
+ルールを追加する際、既存のルール名と被ってはいけないため、新たに入力されたルール名と既存のルール名を比較するjudgeNameメソッドも追加した。以下にその中身を示す
+\begin{lstlisting}[caption=judgenameメソッド]
+boolean judgeName(String name){
+  boolean judge = true;
+  while(true){
+    for(int i=0; i<rules.size();i++){
+      if(rules.get(i).getName().equals(name)){
+        judge = true;
+        break;
+      }else{
+        judge = false;
+        break;
+      }
+    }
+    break;
+  }
+  return judge;
+}
+\end{lstlisting}
+このメソッドでは、入力されたルール名と既存のルール名が被っていた場合にtrueを返すようになっている。
+また、メインメソッドには、ルールの追加、削除、何もしないと選べるよう、switch文を用いて分岐を加えた。
+\begin{lstlisting}[caption=メインメソッドに追加した文]
+    System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 : ");
+    int j = stdIn.nextInt();
+
+    switch(j){
+      case 1:
+		...
+      case 2:
+      	...
+      case 3:
+      	...
+    }
+\end{lstlisting}
+switch文の中身をすべて記述すると無駄に長くなってしまうため省略した。
+case 1では入力されたルール名と既存のルール名を比較したのちにルールを追加する。
+case 2ではルール名を入力し、ルールを削除するようになっている。
+case 3では何もせずに次の操作に移る。
+
 \subsection{実行結果}
 ルールの追加、削除するメソッドを追加したDataBaseSystemを実行した結果を以下に示す。
 \begin{lstlisting}
@@ -299,6 +301,5 @@ No rule produces a new assertion
 \subsection{考察}
 ルールを削除する際、ルール名を把握しなければならない。今回ではRuleXXというルールの番号が分かっていないと削除できないため、ルールの内容から検索、削除ができるようになればさらに汎用性が高いものができると考えたが、効率的にルールを検索する方法が思いつかず、今回はルール名を指定して削除する方法となってしまった。
 \section{感想}
-
 
 \end{document}

@@ -11,8 +11,7 @@ import kadai4.RuleBase;
 import kadai4.WorkingMemory;
 
 public class RuleBaseSystem {
-	static RuleBase rb;
-	static FileManager fm;
+	RuleBase rb;
 
 	public static void main(String args[]) {
 		Scanner scan = new Scanner(System.in);
@@ -22,26 +21,29 @@ public class RuleBaseSystem {
 		//  LogArea.println(" \"?x is b\" and \"?x is c\" are queries");
 		//  LogArea.println("  %java RuleBaseSystem \"?x is b,?x is c\"");
 		//} else {
-		fm = new FileManager();
-		
+
 		LogArea.print("Enter data-filename:");
 		String datafilename = scan.nextLine();
 		LogArea.print("Enter workingmemory-filename:");
 		String wmfilename = scan.nextLine();
-		ArrayList<Rule> rules = fm.loadRules(datafilename);
+		ArrayList<Rule> rules = FileManager.loadRules(datafilename);
 		//ArrayList rules = fm.loadRules("AnimalWorld.data");
-		WorkingMemory wm = new WorkingMemory(fm.loadWm(wmfilename));
+		WorkingMemory wm = new WorkingMemory(FileManager.loadWm(wmfilename));
 		//ArrayList wm    = fm.loadWm("AnimalWorldWm.data");
-		rb = new RuleBase(rules,wm);
+		RuleBaseSystem rbs = new RuleBaseSystem( new RuleBase(rules,wm));
 		scan = new Scanner(System.in);
 		LogArea.print("Enter Search pattern:");
 		String pattern = scan.nextLine();
 
-		patternSearch(pattern);
+		rbs.patternSearch(pattern);
 		//}
 	}
 
-	public static void patternSearch(String pattern) {
+	public RuleBaseSystem(RuleBase rb) {
+		this.rb=rb;
+	}
+
+	public void patternSearch(String pattern) {
 		StringTokenizer st = new StringTokenizer(pattern, ",");
 		ArrayList<String> queries = new ArrayList<String>();
 		for (int i = 0; i < st.countTokens();) {

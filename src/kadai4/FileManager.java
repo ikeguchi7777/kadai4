@@ -7,16 +7,13 @@ import java.util.ArrayList;
 import GUI.LogArea;
 
 public class FileManager {
-	FileReader f;
-	StreamTokenizer st;
-
-	public ArrayList<Rule> loadRules(String theFileName) {
+	public static ArrayList<Rule> loadRules(String theFileName) {
 		ArrayList<Rule> rules = new ArrayList<Rule>();
 		String line;
 		try {
 			int token;
-			f = new FileReader(theFileName);
-			st = new StreamTokenizer(f);
+			FileReader f = new FileReader(theFileName);
+			StreamTokenizer st = new StreamTokenizer(f);
 			while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
 				switch (token) {
 				case StreamTokenizer.TT_WORD:
@@ -54,13 +51,13 @@ public class FileManager {
 		return rules;
 	}
 
-	public ArrayList<String> loadWm(String theFileName) {
+	public static ArrayList<String> loadWm(String theFileName) {
 		ArrayList<String> wm = new ArrayList<String>();
 		String line;
 		try {
 			int token;
-			f = new FileReader(theFileName);
-			st = new StreamTokenizer(f);
+			FileReader f = new FileReader(theFileName);
+			StreamTokenizer st = new StreamTokenizer(f);
 			st.eolIsSignificant(true);
 			st.wordChars('\'', '\'');
 			while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {

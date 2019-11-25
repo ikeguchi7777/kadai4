@@ -15,8 +15,8 @@ import kadai4.WorkingMemory;
 *
 */
 public class RuleBaseSystem {
-	static RuleBase rb;
 
+	RuleBase rb;
 	public static void main(String args[]) {
 		String name;
 		ArrayList<String> antecedents;
@@ -33,49 +33,27 @@ public class RuleBaseSystem {
 		//ArrayList rules = fm.loadRules("AnimalWorld.data");
 		WorkingMemory wm = new WorkingMemory(fm.loadWm(wmfilename));
 		//ArrayList wm    = fm.loadWm("AnimalWorldWm.data");
-		rb = new RuleBase(rules,wm);
-		System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 : ");
-		int j = scan.nextInt();
-
-		switch (j) {
-		case 1:
-			System.out.println("--- Add Rule !!! ---");
-			System.out.print("Enter RuleName:");
-			name = scan.nextLine();
-			System.out.print("Enter antecedent:");
-			antecedents = new ArrayList<>();
-			while (true) {
-				String a = scan.nextLine();
-				if (a.equals("finish"))
-					break;
-				antecedents.add(a);
-			}
-			System.out.print("Enter consequent:");
-			consequent = scan.nextLine();
-			rb.addRules(name, antecedents, consequent);
-			break;
-
-		case 2:
-			System.out.println("--- Delete Rule !!! ---");
-			System.out.print("Enter RuleName:");
-			name = scan.nextLine();
-			rb.deleteRules(name);
-			break;
-
-		case 3:
-			break;
-		}
-		rb.forwardChain();
+		RuleBaseSystem rbs = new RuleBaseSystem(new RuleBase(rules,wm));
+		
 		while (true) {
 			System.out.print("Enter Search Pattern:");
 			String query = scan.nextLine();
 			if (query.equals("exit")) {
 				break;
 			}
-			for (String st : rb.wm.assertions) {
-				if((new Unifier()).unify(st, query))
-					LogArea.println(st);
-			}
+			rbs.patternSearch(query);
+		}
+	}
+	
+	public RuleBaseSystem(RuleBase rb) {
+		this.rb=rb;
+	}
+	
+	public void patternSearch(String pattern) {
+		rb.forwardChain();
+		for (String st : rb.forwardWM.assertions) {
+			if((new Unifier()).unify(st, pattern))
+				LogArea.println(st);
 		}
 	}
 }

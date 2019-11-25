@@ -1,10 +1,9 @@
 package kadai4;
 
-import java.io.FileReader;
-import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import GUI.LogArea;
@@ -15,13 +14,13 @@ import GUI.LogArea;
 *
 */
 public class RuleBase {
-	FileReader f;
-	StreamTokenizer st;
 	public WorkingMemory wm;
+	public WorkingMemory forwardWM;
 	ArrayList<Rule> rules;
-	//static FileManager fm;
 
 	public RuleBase() {
+		wm = new WorkingMemory();
+		rules = new ArrayList<>();
 	}
 
 	public RuleBase(ArrayList<Rule> theRules, WorkingMemory theWm) {
@@ -56,6 +55,7 @@ public class RuleBase {
 	*/
 	public void forwardChain() {
 		boolean newAssertionCreated;
+		forwardWM = new WorkingMemory(wm.assertions);
 		// 新しいアサーションが生成されなくなるまで続ける．
 		do {
 			newAssertionCreated = false;
@@ -65,22 +65,22 @@ public class RuleBase {
 				ArrayList<String> antecedents = aRule.getAntecedents();
 				String consequent = aRule.getConsequent();
 				//HashMap bindings = wm.matchingAssertions(antecedents);
-				ArrayList bindings = wm.matchingAssertions(antecedents);
+				ArrayList bindings = forwardWM.matchingAssertions(antecedents);
 				if (bindings != null) {
 					for (int j = 0; j < bindings.size(); j++) {
 						//後件をインスタンシエーション
 						String newAssertion = instantiate((String) consequent,
 								(HashMap) bindings.get(j));
 						//ワーキングメモリーになければ成功
-						if (!wm.contains(newAssertion)) {
+						if (!forwardWM.contains(newAssertion)) {
 							LogArea.println("Success: " + newAssertion);
-							wm.addAssertion(newAssertion);
+							forwardWM.addAssertion(newAssertion);
 							newAssertionCreated = true;
 						}
 					}
 				}
 			}
-			LogArea.println("Working Memory" + wm);
+			LogArea.println("Working Memory" + forwardWM);
 		} while (newAssertionCreated);
 		LogArea.println("No rule produces a new assertion");
 		LogArea.println("");
@@ -250,56 +250,34 @@ public class RuleBase {
 	public void deleteRules(String name) {
 		for (int i = 0; i < rules.size(); i++) {
 			if (rules.get(i).getName().equals(name)) {
+				LogArea.println("Delete:" + rules.get(i));
 				rules.remove(i);
 				i--;
 			}
 		}
 	}
+	
+	public void deleteAssertion(String assertion) {
+		wm.assertions.remove(assertion);
+	}
 
-	private void loadRules(String theFileName) {
-		String line;
-		try {
-			int token;
-			f = new FileReader(theFileName);
-			st = new StreamTokenizer(f);
-			while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
-				switch (token) {
-				case StreamTokenizer.TT_WORD:
-					String name = null;
-					ArrayList<String> antecedents = null;
-					String consequent = null;
-					if ("rule".equals(st.sval)) {
-						st.nextToken();
-						//                            if(st.nextToken() == '"'){
-						name = st.sval;
-						st.nextToken();
-						if ("if".equals(st.sval)) {
-							antecedents = new ArrayList<String>();
-							st.nextToken();
-							while (!"then".equals(st.sval)) {
-								antecedents.add(st.sval);
-								st.nextToken();
-							}
-							if ("then".equals(st.sval)) {
-								st.nextToken();
-								consequent = st.sval;
-							}
-						}
-						//                            }
-					}
-					// ルールの生成
-					rules.add(new Rule(name, antecedents, consequent));
-					break;
-				default:
-					LogArea.println(((Integer)token).toString());
-					break;
-				}
+	public void addRules(List<Rule> rules) {
+		for (Rule rule : rules) {
+			if (!this.rules.contains(rule)) {
+				LogArea.println("Add:" + rule);
+				this.rules.add(rule);
 			}
-		} catch (Exception e) {
-			LogArea.println(e.toString());
-		}
-		for (int i = 0; i < rules.size(); i++) {
-			LogArea.println(((Rule) rules.get(i)).toString());
 		}
 	}
+
+	public void addWorkingMemory(List<String> wmlist) {
+		for (String string : wmlist) {
+			wm.addAssertion(string);
+		}
+	}
+
+	public void addWorkingMemory(String wmline) {
+		wm.addAssertion(wmline);
+	}
+
 }

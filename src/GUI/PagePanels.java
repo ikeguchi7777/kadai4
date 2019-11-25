@@ -95,11 +95,11 @@ class AddPanel extends PagePanelBase{
 		p2.add(button4);
 		add(p1);
 		add(p2);
-		
+
 		JPanel panel = new JPanel();
-		JLabel label = new JLabel("英文で質問してください");
+		JLabel label = new JLabel("ifを追加してください");
 		JTextField text1 = new JTextField(100);
-		JButton button = new JButton("検索");
+		JButton button = new JButton("OK");
 		panel.add(text1);
 		panel.add(button);
 		add(label, BorderLayout.PAGE_START);

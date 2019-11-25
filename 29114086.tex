@@ -1,0 +1,237 @@
+\documentclass[a4j]{jarticle}
+
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{listings,jlisting}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+
+%ここからソースコードの表示に関する設定
+\lstset{
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex
+}
+%ここまでソースコードの表示に関する設定
+
+\title{知能プログラミング演習II 課題4}
+\author{グループ07\\
+  29114086 飛世裕貴\\
+%  {\small (グループレポートの場合は、グループ名および全員の学生番号と氏名が必要)}
+}
+\date{2019年11月11日}
+
+\begin{document}
+\maketitle
+
+\paragraph{提出物} rep4
+\paragraph{グループ} グループ07
+\paragraph{メンバー}
+\begin{tabular}{|c|c|c|}
+  \hline\hline
+  学籍番号&名前&貢献度\\
+  \hline\hline
+  29114007&池口弘尚&\\
+  \hline
+  29114031&大原拓人&\\
+  \hline
+  29114048&北原太一&\\
+  \hline
+  29114086&飛世裕貴&\\
+  \hline
+  29114095&野竹浩二朗&\\
+  \hline
+\end{tabular}
+
+
+
+\section{課題の説明}
+\begin{description}
+\item[課題4-1] まず，教科書3.2.1の「前向き推論」のプログラムと教科書3.2.2の「後向き推論」のプログラムとの動作確認をし，前向き推論と後ろ向き推論の違いを説明せよ．また，実行例を示してルールが選択される過程を説明せよ．説明の際には，LibreOfficeのDraw（コマンド soffice --draw）などのドロー系ツールを使ってp.106 図3.11やp.118 図3.12のような図として示すことが望ましい．
+
+\item[課題4-2] CarShop.data , AnimalWorld.data 等のデータファイルを実際的な応用事例（自分達の興味分野で良い）に書き換えて，前向き推論，および後ろ向き推論に基づく質問応答システムを作成せよ．どのような応用事例を扱うかは，メンバーで話し合って決めること．
+なお，ユーザの質問は英語や日本語のような自然言語が望ましいが，難しければ変数を含むパターン等でも可とする．
+
+\item[課題4-3] 上記4-2で実装した質問応答システムのGUIを作成せよ．
+質問に答える際の推論過程を可視化できることが望ましい．
+
+\item[課題4-4]上記4-3で実装したGUIを発展させ，質問応答だけでなく，ルールの編集（追加，削除，変更）などについてもGUIで行えるようにせよ．
+
+\end{description}
+
+今回、私が担当した課題は課題4-2である。
+
+\section{課題4-2}
+\begin{screen}
+CarShop.data , AnimalWorld.data 等のデータファイルを実際的な応用事例（自分達の興味分野で良い）に書き換えて，前向き推論，および後ろ向き推論に基づく質問応答システムを作成せよ．どのような応用事例を扱うかは，メンバーで話し合って決めること．
+なお，ユーザの質問は英語や日本語のような自然言語が望ましいが，難しければ変数を含むパターン等でも可とする．
+
+\end{screen}
+
+\subsection{手法}
+本課題ではスポーツに関するデータファイルを作成し、そのデータファイルを用いて前向き推論、後ろ向き推論に基づく質問応答システムを作成する.以下に今回用いるデータファイル（data.txt、dataWm.txt）の一部を示す.\\
+
+\begin{screen}
+\begin{verbatim}
+
+rule 	"Rule1"
+if 	"We play ?x indoors"
+then 	"?x is an indoor sport"
+
+rule 	"Rule2"
+if 	"We play ?x outdoors"
+then 	"?x is an outdoor sport"
+
+rule 	"Rule3"
+if 	"We use a ball in ?x"
+then 	"?x is a ball sport"
+
+rule 	"Rule4"
+if 	"?x is a ball sport"
+	"We use a racket in ?x"
+then 	"?x is a racket sport"
+
+rule 	"Rule5"
+if 	"?x is an indoor sport"
+	"?x is a ball sport"
+	"We play ?x in 5 people"
+then 	"?x is basketball"
+\end{verbatim}
+\vdots
+（後略）
+
+\end{screen}
+\begin{center}
+図１：ルールベースに関するデータファイル（data.txt）の一部\\
+\end{center}
+
+
+\begin{screen}
+\begin{verbatim}
+
+my-club-activity is an indoor sport
+We use a ball in my-club-activity
+my-club-activity is a sport over the net
+We play my-club-activity in 6 people
+His-competition is swimming
+We runs 800 meter to 5000 meter on his-competition
+
+\end{verbatim}
+\end{screen}
+\begin{center}
+図２：ワーキングメモリに関するデータファイル（dataWm.txt）\\
+\end{center}
+このようなデータファイルを用いて、質問応答システムを作成していく.尚、質問応答システムの作成に関してはパターンマッチングによる質問応答機能を作成したあと、自然言語に対応させていくという流れで進行していく.私は後ろ向き推論におけるパターンマッチングによる質問応答機能の作成を担当した.
+
+\subsection{実装}
+パターンマッチングにおいてルールベース、ワーキングメモリの読み込みをloadRules、loadWmメソッドで行い、後ろ向き推論による質問応答は既存のRuleBaseクラスのbackwardChainメソッドを用いて行った.ここでワーキングメモリを読み込む際、図２に示したように数字をトークンとして読み込むと正しく読み込まれず、質問応答が正しく行われない.そのため、loadWmメソッドを以下のように実装した.\\
+
+\begin{lstlisting}[caption=loadWmメソッド]
+  public ArrayList<String> loadWm(String theFileName){
+    ArrayList<String> wm = new ArrayList<String>();
+    String line;
+    try{
+      int token;
+      f = new FileReader(theFileName);
+      st = new StreamTokenizer(f);
+      st.eolIsSignificant(true);
+      st.wordChars('\'','\'');
+      while((token = st.nextToken())!= StreamTokenizer.TT_EOF){
+        line = new String();
+        while( token != StreamTokenizer.TT_EOL){
+          //以下、変更点
+          if(st.sval == null)
+            line = line + (int)st.nval + " ";
+          else
+            line = line + st.sval + " ";
+          token = st.nextToken();
+        }
+        wm.add(line.trim());
+      }
+    } catch(Exception e){
+      LogArea.println(e);
+    }
+    return wm;
+  }
+
+\end{lstlisting}
+
+\begin{verbatim}
+
+\end{verbatim}
+変更を加えたのは上記プログラム中の14〜17行目で、読み込んだトークンが文字列でなければ数値として扱うようにしている.
+このようにする事でワーキングメモリ中の「We play my-club-activity in 6 people」のようにトークンとして数字を含む場合においても質問応答が可能となった.
+
+\subsection{実行例}
+後ろ向き推論に関するプログラムを実行したとき、その結果を標準出力に出力したものを以下に示す.\\
+
+\begin{screen}
+\begin{verbatim}
+Enter data-filename:data.txt
+Enter workingmemory-filename:dataWm.txt
+add rule? delete rule? add...1/delete...2/No thanks...3 :3
+Enter Search pattern:?x is volleyball
+Hypothesis:[?x is volleyball]
+Success RULE
+Rule:Rule6 [?x5 is an indoor sport, ?x5 is a ball sport, 
+?x5 is a sport over the net,We play ?x5 in 6 people]
+->?x5 is volleyball <=> ?x is volleyball
+\end{verbatim}
+\vdots
+（中略）\\
+\vdots
+\begin{verbatim}
+Success WM
+We play my-club-activity in 6 people <=> We play ?x5 in 6 people
+Yes
+{?x=my-club-activity, ?x5=my-club-activity, ?x8=my-club-activity}
+binding: {?x=my-club-activity, ?x5=my-club-activity, ?x8=my-club-activity}
+tmp: ?x, result:  my-club-activity
+Query: ?x is volleyball
+Answer:my-club-activity is volleyball
+\end{verbatim}
+\end{screen}
+\begin{center}
+図３：後ろ向き推論による質問検索の実行例\\
+\end{center}
+
+このようにトークンとして数字を含んでいたとしても正しく検索ができていることを確認できた.
+\subsection{考察}
+今回の課題ではトークンとして数字が含まれている場合においても検索できるように改良を加えたが、「5000 meter」を「5000m」のように略記した際には単一トークン中に数字と文字が含まれることでトークン読み込みが正しく行われず、検索も正常に行われない事がわかった.このような問題は自然言語における形態素解析によって解決できるのではないかと考えられる.トークンという考え方においては「5000m」のような文字列は一つのトークンとして認識してしまうために正常に検索が行えなかったが、この文字列を形態素解析器に読み込ませると「5000」と「m」という二つの形態素として認識する事ができる.そのため、一つのトークンを文字列部と数字部に分離して考える事ができる.一例として、実際に文字と数字を含む文字列に対して形態素解析器MeCabを用いて形態素解析を行なった結果を以下に示しておく.\\
+
+\begin{screen}
+\begin{verbatim}
+5000m
+5000	名詞,数,*,*,*,*,*
+m	名詞,固有名詞,組織,*,*,*,*
+EOS
+
+G7サミット
+G	名詞,一般,*,*,*,*,*
+7	名詞,数,*,*,*,*,*
+サミット	名詞,一般,*,*,*,*,サミット,サミット,サミット
+EOS
+\end{verbatim}
+\end{screen}
+\begin{center}
+図４：形態素解析による文字と数字の分割の実行例
+\end{center}
+このようにトークンとしてではなくさらに細かい分割である形態素を用いることで、より一般的な文字列に対して正常な検索が可能な質問検索システムを実装する事が可能であると考える.
+\section{感想}
+
+
+
+\end{document}

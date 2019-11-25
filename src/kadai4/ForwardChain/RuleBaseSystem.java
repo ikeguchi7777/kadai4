@@ -15,35 +15,58 @@ import GUI.LogArea;
 *
 */
 public class RuleBaseSystem {
-	static RuleBase rb;
+  static RuleBase rb;
+  public static void main(String args[]){
+    String name;
+    ArrayList<String> antecedents;
+    String consequent;
 
-	public static void main(String args[]) {
-		Scanner stdIn = new Scanner(System.in);
-		rb = new RuleBase();
-		LogArea.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
-		int j = stdIn.nextInt();
-		switch (j) {
-		case 1:
-			rb.addRules();
-			break;
-		case 2:
-			rb.deleteRules();
-			break;
-		case 3:
-			break;
-		}
-		rb.forwardChain();
-		while (true) {
-			LogArea.print("Enter Search Pattern:");
-			String query = stdIn.nextLine();
-			if (query.equals("exit")) {
-				break;
-			}
-			for (String st : rb.wm.assertions) {
-				(new Unifier()).unify(st, query);
-			}
-		}
-	}
+    Scanner stdIn = new Scanner(System.in);
+    Scanner scan = new Scanner(System.in);
+    rb = new RuleBase();
+    System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 : ");
+    int j = stdIn.nextInt();
+
+    switch(j){
+      case 1:
+      System.out.println("--- Add Rule !!! ---");
+      System.out.print("Enter RuleName:");
+      name = scan.nextLine();
+      System.out.print("Enter antecedent:");
+      antecedents = new ArrayList<>();
+      while(true){
+        String a = scan.nextLine();
+        if(a.equals("finish")) break;
+        antecedents.add(a);
+      }
+      System.out.print("Enter consequent:");
+      consequent = scan.nextLine();
+      rb.addRules(name,antecedents,consequent);
+      break;
+
+      case 2:
+      System.out.println("--- Delete Rule !!! ---");
+      System.out.print("Enter RuleName:");
+      name = scan.nextLine();
+      rb.deleteRules(name);
+      break;
+
+      case 3:
+      break;
+    }
+    rb.forwardChain();
+    stdIn = new Scanner(System.in);
+    while(true){
+      System.out.print("Enter Search Pattern:");
+      String query = stdIn.nextLine();
+      if(query.equals("exit")){
+        break;
+      }
+      for(String st:rb.wm.assertions){
+        (new Unifier()).unify(st,query);
+      }
+    }
+  }
 }
 
 /**
@@ -150,182 +173,182 @@ class WorkingMemory {
 *
 */
 class RuleBase {
-	String fileName;
-	String dataFilename;
-	String pattern;
-	FileReader f;
-	StreamTokenizer st;
-	WorkingMemory wm;
-	ArrayList<Rule> rules;
-	static FileManager fm;
+  String fileName;
+  String dataFilename;
+  String pattern;
+  FileReader f;
+  StreamTokenizer st;
+  WorkingMemory wm;
+  ArrayList<Rule> rules;
+  static FileManager fm;
 
-	RuleBase() {
-		Scanner scan = new Scanner(System.in);
-		LogArea.print("Enter data-filename:"); // ファイル名の入力
-		fileName = scan.nextLine();
-		wm = new WorkingMemory();
-		fm = new FileManager();
+  RuleBase(){
+    Scanner scan = new Scanner(System.in);
+    System.out.print("Enter data-filename:"); // ファイル名の入力
+    fileName = scan.nextLine();
+    wm = new WorkingMemory();
+    fm = new FileManager();
 
-		LogArea.print("Enter workingmemory-filename:");
-		dataFilename = scan.nextLine();
-		ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
-		for (String str : wms) {
-			wm.addAssertion(str);
-		}
-		/*    while(true){
-		LogArea.print("Enter add-assertion:");
-		String as = scan.nextLine();
-		if(as.equals("exit")){
-		break;
-		}else{
-		wm.addAssertion(as);
-		}
-		}*/
-		rules = new ArrayList<>();
-		loadRules(fileName);
-		//scan.close();
-	}
+    System.out.print("Enter workingmemory-filename:");
+    dataFilename = scan.nextLine();
+    ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
+    for(String str : wms){
+      wm.addAssertion(str);
+    }
+    /*    while(true){
+    System.out.print("Enter add-assertion:");
+    String as = scan.nextLine();
+    if(as.equals("exit")){
+    break;
+  }else{
+  wm.addAssertion(as);
+}
+}*/
+rules = new ArrayList<>();
+loadRules(fileName);
+//scan.close();
+}
 
-	/**
-	* 前向き推論を行うためのメソッド
-	*
-	*/
-	public void forwardChain() {
-		boolean newAssertionCreated;
-		// 新しいアサーションが生成されなくなるまで続ける．
-		do {
-			newAssertionCreated = false;
-			for (int i = 0; i < rules.size(); i++) {
-				Rule aRule = (Rule) rules.get(i);
-				LogArea.println("apply rule:" + aRule.getName());
-				ArrayList<String> antecedents = aRule.getAntecedents();
-				String consequent = aRule.getConsequent();
-				//HashMap bindings = wm.matchingAssertions(antecedents);
-				ArrayList bindings = wm.matchingAssertions(antecedents);
-				if (bindings != null) {
-					for (int j = 0; j < bindings.size(); j++) {
-						//後件をインスタンシエーション
-						String newAssertion = instantiate((String) consequent,
-								(HashMap) bindings.get(j));
-						//ワーキングメモリーになければ成功
-						if (!wm.contains(newAssertion)) {
-							LogArea.println("Success: " + newAssertion);
-							wm.addAssertion(newAssertion);
-							newAssertionCreated = true;
-						}
-					}
-				}
-			}
-			LogArea.println("Working Memory" + wm);
-		} while (newAssertionCreated);
-		LogArea.println("No rule produces a new assertion");
-		LogArea.println("");
-	}
+/**
+* 前向き推論を行うためのメソッド
+*
+*/
+public void forwardChain(){
+  boolean newAssertionCreated;
+  // 新しいアサーションが生成されなくなるまで続ける．
+  do {
+    newAssertionCreated = false;
+    for(int i = 0 ; i < rules.size(); i++){
+      Rule aRule = (Rule)rules.get(i);
+      System.out.println("apply rule:"+aRule.getName());
+      ArrayList<String> antecedents = aRule.getAntecedents();
+      String consequent  = aRule.getConsequent();
+      //HashMap bindings = wm.matchingAssertions(antecedents);
+      ArrayList bindings = wm.matchingAssertions(antecedents);
+      if(bindings != null){
+        for(int j = 0 ; j < bindings.size() ; j++){
+          //後件をインスタンシエーション
+          String newAssertion =
+          instantiate((String)consequent,
+          (HashMap)bindings.get(j));
+          //ワーキングメモリーになければ成功
+          if(!wm.contains(newAssertion)){
+            System.out.println("Success: "+newAssertion);
+            wm.addAssertion(newAssertion);
+            newAssertionCreated = true;
+          }
+        }
+      }
+    }
+    System.out.println("Working Memory"+wm);
+  } while(newAssertionCreated);
+  System.out.println("No rule produces a new assertion");
+  System.out.println();
+}
 
-	private String instantiate(String thePattern, HashMap theBindings) {
-		String result = new String();
-		StringTokenizer st = new StringTokenizer(thePattern);
-		for (int i = 0; i < st.countTokens();) {
-			String tmp = st.nextToken();
-			if (var(tmp)) {
-				result = result + " " + (String) theBindings.get(tmp);
-			} else {
-				result = result + " " + tmp;
-			}
-		}
-		return result.trim();
-	}
+private String instantiate(String thePattern, HashMap theBindings){
+  String result = new String();
+  StringTokenizer st = new StringTokenizer(thePattern);
+  for(int i = 0 ; i < st.countTokens();){
+    String tmp = st.nextToken();
+    if(var(tmp)){
+      result = result + " " + (String)theBindings.get(tmp);
+    } else {
+      result = result + " " + tmp;
+    }
+  }
+  return result.trim();
+}
 
-	private boolean var(String str1) {
-		// 先頭が ? なら変数
-		return str1.startsWith("?");
-	}
+private boolean var(String str1){
+  // 先頭が ? なら変数
+  return str1.startsWith("?");
+}
 
-	//追加箇所
-	void addRules() {
-		String name = null;
-		ArrayList<String> antecedents = null;
-		String consequent = null;
+//追加箇所
+void addRules(String name,ArrayList<String> antecedents,String consequent){
+  //String name = null;
+  //ArrayList<String> antecedents = null;
+  //String consequent = null;
 
-		Scanner scan = new Scanner(System.in);
-		LogArea.println("--- Add Rule !!! ---");
-		LogArea.print("Enter RuleName:");
-		name = scan.nextLine();
-		LogArea.print("Enter antecedent:");
-		antecedents = new ArrayList<>();
-		while (true) {
-			String a = scan.nextLine();
-			if (a.equals("finish"))
-				break;
-			antecedents.add(a);
-		}
-		LogArea.print("Enter consequent:");
-		consequent = scan.nextLine();
+  //Scanner scan = new Scanner(System.in);
+/*  System.out.print("Enter RuleName:");
+  name = scan.nextLine();
+  System.out.print("Enter antecedent:");
+  antecedents = new ArrayList<>();
+  while(true){
+    String a = scan.nextLine();
+    if(a.equals("finish")) break;
+    antecedents.add(a);
+  }
+  System.out.print("Enter consequent:");
+  consequent = scan.nextLine();           */
 
-		rules.add(new Rule(name, antecedents, consequent));
-	}
+  rules.add(new Rule(name,antecedents,consequent));
+}
 
-	void deleteRules() {
-		Scanner scan = new Scanner(System.in);
-		String name = null;
+void deleteRules(String name){
+  for(int i=0; i<rules.size();i++){
+    if(rules.get(i).getName().equals(name)){
+      rules.remove(i);
+      i--;
+    }
+  }
+}
 
-		LogArea.println("--- Delete Rule !!! ---");
-		LogArea.print("Enter RuleName:");
-		name = scan.nextLine();
-		for (int i = 0; i < rules.size(); i++) {
-			if (rules.get(i).getName().equals(name)) {
-				rules.remove(i);
-				i--;
-			}
-		}
-	}
 
-	private void loadRules(String theFileName) {
-		String line;
-		try {
-			int token;
-			f = new FileReader(theFileName);
-			st = new StreamTokenizer(f);
-			while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
-				switch (token) {
-				case StreamTokenizer.TT_WORD:
-					String name = null;
-					ArrayList<String> antecedents = null;
-					String consequent = null;
-					if ("rule".equals(st.sval)) {
-						st.nextToken();
-						//                            if(st.nextToken() == '"'){
-						name = st.sval;
-						st.nextToken();
-						if ("if".equals(st.sval)) {
-							antecedents = new ArrayList<String>();
-							st.nextToken();
-							while (!"then".equals(st.sval)) {
-								antecedents.add(st.sval);
-								st.nextToken();
-							}
-							if ("then".equals(st.sval)) {
-								st.nextToken();
-								consequent = st.sval;
-							}
-						}
-						//                            }
-					}
-					// ルールの生成
-					rules.add(new Rule(name, antecedents, consequent));
-					break;
-				default:
-					LogArea.println(((Integer)token).toString());
-					break;
-				}
-			}
-		} catch (Exception e) {
-			LogArea.println(e.toString());
-		}
-		for (int i = 0; i < rules.size(); i++) {
-			LogArea.println(((Rule) rules.get(i)).toString());
-		}
-	}
+
+
+
+
+
+
+private void loadRules(String theFileName){
+  String line;
+  try{
+    int token;
+    f = new FileReader(theFileName);
+    st = new StreamTokenizer(f);
+    while((token = st.nextToken())!= StreamTokenizer.TT_EOF){
+      switch(token){
+        case StreamTokenizer.TT_WORD:
+        String name = null;
+        ArrayList<String> antecedents = null;
+        String consequent = null;
+        if("rule".equals(st.sval)){
+          st.nextToken();
+          //                            if(st.nextToken() == '"'){
+          name = st.sval;
+          st.nextToken();
+          if("if".equals(st.sval)){
+            antecedents = new ArrayList<String>();
+            st.nextToken();
+            while(!"then".equals(st.sval)){
+              antecedents.add(st.sval);
+              st.nextToken();
+            }
+            if("then".equals(st.sval)){
+              st.nextToken();
+              consequent = st.sval;
+            }
+          }
+          //                            }
+        }
+        // ルールの生成
+        rules.add(new Rule(name,antecedents,consequent));
+        break;
+        default:
+        System.out.println(token);
+        break;
+      }
+    }
+  } catch(Exception e){
+    System.out.println(e);
+  }
+  for(int i = 0 ; i < rules.size() ; i++){
+    System.out.println(((Rule)rules.get(i)).toString());
+  }
+}
 }
 
 /**
@@ -455,75 +478,77 @@ class Matcher {
 }
 
 class FileManager {
-	FileReader f;
-	StreamTokenizer st;
+  FileReader f;
+  StreamTokenizer st;
+  public ArrayList<Rule> loadRules(String theFileName){
+    ArrayList<Rule> rules = new ArrayList<Rule>();
+    String line;
+    try{
+      int token;
+      f = new FileReader(theFileName);
+      st = new StreamTokenizer(f);
+      while((token = st.nextToken())!= StreamTokenizer.TT_EOF){
+        switch(token){
+          case StreamTokenizer.TT_WORD:
+          String name = null;
+          ArrayList<String> antecedents = null;
+          String consequent = null;
+          if("rule".equals(st.sval)){
+            st.nextToken();
+            name = st.sval;
+            st.nextToken();
+            if("if".equals(st.sval)){
+              antecedents = new ArrayList<String>();
+              st.nextToken();
+              while(!"then".equals(st.sval)){
+                antecedents.add(st.sval);
+                st.nextToken();
+              }
+              if("then".equals(st.sval)){
+                st.nextToken();
+                consequent = st.sval;
+              }
+            }
+          }
+          rules.add(
+          new Rule(name,antecedents,consequent));
+          break;
+          default:
+          System.out.println(token);
+          break;
+        }
+      }
+    } catch(Exception e){
+      System.out.println(e);
+    }
+    return rules;
+  }
 
-	public ArrayList<Rule> loadRules(String theFileName) {
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-		String line;
-		try {
-			int token;
-			f = new FileReader(theFileName);
-			st = new StreamTokenizer(f);
-			while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
-				switch (token) {
-				case StreamTokenizer.TT_WORD:
-					String name = null;
-					ArrayList<String> antecedents = null;
-					String consequent = null;
-					if ("rule".equals(st.sval)) {
-						st.nextToken();
-						name = st.sval;
-						st.nextToken();
-						if ("if".equals(st.sval)) {
-							antecedents = new ArrayList<String>();
-							st.nextToken();
-							while (!"then".equals(st.sval)) {
-								antecedents.add(st.sval);
-								st.nextToken();
-							}
-							if ("then".equals(st.sval)) {
-								st.nextToken();
-								consequent = st.sval;
-							}
-						}
-					}
-					rules.add(
-							new Rule(name, antecedents, consequent));
-					break;
-				default:
-					LogArea.println(((Integer)token).toString());
-					break;
-				}
-			}
-		} catch (Exception e) {
-			LogArea.println(e.toString());
-		}
-		return rules;
-	}
-
-	public ArrayList<String> loadWm(String theFileName) {
-		ArrayList<String> wm = new ArrayList<String>();
-		String line;
-		try {
-			int token;
-			f = new FileReader(theFileName);
-			st = new StreamTokenizer(f);
-			st.eolIsSignificant(true);
-			st.wordChars('\'', '\'');
-			while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
-				line = new String();
-				while (token != StreamTokenizer.TT_EOL) {
-					line = line + st.sval + " ";
-					token = st.nextToken();
-				}
-				wm.add(line.trim());
-			}
-		} catch (Exception e) {
-			LogArea.println(e.toString());
-		}
-		return wm;
-	}
+  public ArrayList<String> loadWm(String theFileName){
+    ArrayList<String> wm = new ArrayList<String>();
+    String line;
+    try{
+      int token;
+      f = new FileReader(theFileName);
+      st = new StreamTokenizer(f);
+      st.eolIsSignificant(true);
+      st.wordChars('\'','\'');
+      while((token = st.nextToken())!= StreamTokenizer.TT_EOF){
+        line = new String();
+        while( token != StreamTokenizer.TT_EOL){
+          if(st.sval == null)
+            line = line + (int)st.nval + " ";
+          else
+            line = line + st.sval + " ";
+          token = st.nextToken();
+        }
+        wm.add(line.trim());
+      }
+    } catch(Exception e){
+      System.out.println(e);
+    }
+    return wm;
+  }
 }
 
 class Unifier {

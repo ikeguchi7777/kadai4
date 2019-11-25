@@ -3,5 +3,5 @@ We use a ball in my-club-activity
 my-club-activity is a sport over the net
 We play my-club-activity in six people
 His-competition is swimming
-We runs 800m to 5000m on his-competition
+We runs 800 meter to 5000 meter on his-competition
 

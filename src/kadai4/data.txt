@@ -115,17 +115,17 @@ if 	"?x is running"
 then 	"?x is race"
 
 rule 	"Rule21"
-if	"We runs below 400m on ?x"
+if	"We runs below 400 meter on ?x"
    	"?x is race"
 then 	"?x is sprint"
 
 rule 	"Rule22"
-if 	"We runs 800m to 5000m on ?x"
+if 	"We runs 800 meter to 5000 meter on ?x"
    	"?x is race"
 then 	"?x is midium-distance race"
 
 rule 	"Rule23"
-if 	"We runs 5000m or more on ?x"
+if 	"We runs 5000 meter or more on ?x"
    	"?x is race"
 then 	"?x is long-distance race"
 

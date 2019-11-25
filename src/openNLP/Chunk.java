@@ -20,4 +20,17 @@ public class Chunk extends ArrayList<Morpheme> {
 		}
 		return line;
 	}
+	
+	@Override
+	public String toString() {
+		String result ="---";
+		for (int i = 0; i < size(); i++) {
+			result+=get(i);
+			if(i<size()-1) {
+				result+="\n    |  |\n"+
+				          "    |  --";
+			}
+		}
+		return result;
+	}
 }

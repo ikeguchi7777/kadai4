@@ -10,11 +10,6 @@ import java.util.List;
 
 import opennlp.tools.chunker.ChunkerME;
 import opennlp.tools.chunker.ChunkerModel;
-import opennlp.tools.cmdline.parser.ParserTool;
-import opennlp.tools.parser.Parse;
-import opennlp.tools.parser.Parser;
-import opennlp.tools.parser.ParserFactory;
-import opennlp.tools.parser.ParserModel;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 
@@ -23,6 +18,20 @@ import opennlp.tools.postag.POSTaggerME;
  */
 public class Sentence extends ArrayList<Chunk> {
 
+	@Override
+	public String toString() {
+		String result="TOP---";
+		for (int i = 0; i < size(); i++) {
+			result+=get(i)+"\n";
+			if(i<size()-1) {
+				result+="    |\n"
+						  + "    --";
+			}
+			
+		}
+		return result;
+	}
+
 	public static void main(String[] args) {
 		Sentence sent = new Sentence();
 		String txt = "Jiro has a hobby of playing baseball.";
@@ -30,7 +39,7 @@ public class Sentence extends ArrayList<Chunk> {
 		String[] rStrings = new String[tList.size()];
 		tList.toArray(rStrings);
 		sent.analysis(rStrings);
-		System.out.println(tList);
+		System.out.println(sent);
 		System.out.println(sent.getChunklist());
 		// http://sourceforge.net/apps/mediawiki/opennlp/index.php?title=Parser#Training_Tool
 		/*InputStream is;
@@ -85,7 +94,11 @@ public class Sentence extends ArrayList<Chunk> {
 			Chunk last = null;
 
 			for (int i = 0; i < tokens.length; i++) {
-				if (chunks[i].startsWith("B")&&(i==0||!tags[i-1].equals("IN"))) {
+				if(chunks[i].equals("O")) {
+					last = new Chunk(chunks[i]);
+					add(last);
+				}
+				else if (chunks[i].startsWith("B")&&(i==0||!tags[i-1].equals("IN"))) {
 					last = new Chunk(chunks[i].split("-")[1]);
 					add(last);
 				}
@@ -149,4 +162,5 @@ public class Sentence extends ArrayList<Chunk> {
 		}
 		return result;
 	}
+	
 }

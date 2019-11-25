@@ -14,4 +14,9 @@ public class Morpheme {
 	public String getWord() {
 		return word;
 	}
+	
+	@Override
+	public String toString() {
+		return "["+word+","+POSTag+","+model+" ]";
+	}
 }

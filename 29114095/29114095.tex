@@ -143,7 +143,7 @@ ADD:We use a ball in tennis
 ADD:We use racket in tennis
 Rule1 [We play ?x indoors]->?x is an indoor sport
 Rule2 [We play ?x outdoors]->?x is an outdoor sport
-...
+...(中略)
 Rule33 [?x is throwing competitions, We throw a hammmer in ?x]->?x is hammer throw
 Rule34 [?x is throwing competitions, We throw a spear]->?x is javelin
 apply rule:Rule1
@@ -155,22 +155,7 @@ Success: tennis is a ball sport
 ADD:tennis is a ball sport
 apply rule:Rule4
 apply rule:Rule5
-...
-apply rule:Rule32
-apply rule:Rule33
-apply rule:Rule34
-Working Memory[We play tennis outdoors, We use a ball in tennis, We use racket in tennis, tennis is an outdoor sport, tennis is a ball sport]
-apply rule:Rule1
-apply rule:Rule2
-apply rule:Rule24
-apply rule:Rule25
-apply rule:Rule26
-apply rule:Rule27
-apply rule:Rule28
-apply rule:Rule29
-apply rule:Rule30
-apply rule:Rule31
-apply rule:Rule32
+...(中略)
 apply rule:Rule33
 apply rule:Rule34
 Working Memory[We play tennis outdoors, We use a ball in tennis, We use racket in tennis, tennis is an outdoor sport, tennis is a ball sport]
@@ -192,7 +177,7 @@ Enter Search Pattern:exit
 \end{screen}
 
 \subsection{手法}
-
+ルールを追加・削除するメソッドを作成し、それを用いてGUIからルールの追加、削除を行えるようにする。
 \subsection{実装}
 私は、ルールを追加できるメソッドaddRulesと削除できるメソッドdeleteRulesを作成した。
 まず、addRulesを示す。
@@ -261,12 +246,7 @@ case 3では何もせずに次の操作に移る。
 \begin{lstlisting}
 Enter data-filename:data.txt
 Enter workingmemory-filename:dataWm.txt
-ADD:We play tennis outdoors
-ADD:We use a ball in tennis
-ADD:We use racket in tennis
-Rule1 [We play ?x indoors]->?x is an indoor sport
-Rule2 [We play ?x outdoors]->?x is an outdoor sport
-...
+...(中略)
 Rule33 [?x is throwing competitions, We throw a hammmer in ?x]->?x is hammer throw
 Rule34 [?x is throwing competitions, We throw a spear]->?x is javelin
 add rule? delete rule? add...1/delete...2/No thanks...3 :1
@@ -275,31 +255,17 @@ Enter RuleName:Rule35
 Enter antecedent:We play ?x space
 finish
 Enter consequent:?x is unknown
-apply rule:Rule1
-apply rule:Rule2
-Success: tennis is an outdoor sport
-ADD:tennis is an outdoor sport
-apply rule:Rule3
-Success: tennis is a ball sport
-ADD:tennis is a ball sport
-apply rule:Rule4
-apply rule:Rule5
-...
-apply rule:Rule34
-apply rule:Rule35
-Working Memory[We play tennis outdoors, We use a ball in tennis, We use racket in tennis, tennis is an outdoor sport, tennis is a ball sport]
-apply rule:Rule1
-apply rule:Rule2
-...
+...(中略)
 apply rule:Rule34
 apply rule:Rule35
 Working Memory[We play tennis outdoors, We use a ball in tennis, We use racket in tennis, tennis is an outdoor sport, tennis is a ball sport]
 No rule produces a new assertion
-...
+...(以下略)
 \end{lstlisting}
 ここでも、実行結果を省略して載せている。ルールの追加を選択後、3つの要素を入力するとaplly ruleにルールが反映されていることが確認できる。
 \subsection{考察}
 ルールを削除する際、ルール名を把握しなければならない。今回ではRuleXXというルールの番号が分かっていないと削除できないため、ルールの内容から検索、削除ができるようになればさらに汎用性が高いものができると考えたが、効率的にルールを検索する方法が思いつかず、今回はルール名を指定して削除する方法となってしまった。
 \section{感想}
-
+今回の課題では、BackwordChain、ForwordChainの2つがあり、片方でできてももう片方ではできなかったりと苦労した。
+また、GUIを作ったわけではないが、GUIを作るうえで使うメソッドを作成した。これに関してGUIの作成を担当してくれている人からどんなメソッドの方がいいかを聞きながらの作成となったので大変だった。
 \end{document}

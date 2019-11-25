@@ -8,23 +8,47 @@ import java.io.*;
 public class RuleBaseSystem {
   static RuleBase rb;
   public static void main(String args[]){
+    String name;
+    ArrayList<String> antecedents;
+    String consequent;
+
     Scanner stdIn = new Scanner(System.in);
+    Scanner scan = new Scanner(System.in);
     rb = new RuleBase();
-    LogArea.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
+    System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 : ");
     int j = stdIn.nextInt();
+
     switch(j){
       case 1:
-      rb.addRules();
+      System.out.println("--- Add Rule !!! ---");
+      System.out.print("Enter RuleName:");
+      name = scan.nextLine();
+      System.out.print("Enter antecedent:");
+      antecedents = new ArrayList<>();
+      while(true){
+        String a = scan.nextLine();
+        if(a.equals("finish")) break;
+        antecedents.add(a);
+      }
+      System.out.print("Enter consequent:");
+      consequent = scan.nextLine();
+      rb.addRules(name,antecedents,consequent);
       break;
+
       case 2:
-      rb.deleteRules();
+      System.out.println("--- Delete Rule !!! ---");
+      System.out.print("Enter RuleName:");
+      name = scan.nextLine();
+      rb.deleteRules(name);
       break;
+
       case 3:
       break;
     }
     rb.forwardChain();
+    stdIn = new Scanner(System.in);
     while(true){
-      LogArea.print("Enter Search Pattern:");
+      System.out.print("Enter Search Pattern:");
       String query = stdIn.nextLine();
       if(query.equals("exit")){
         break;
@@ -108,7 +132,7 @@ class WorkingMemory {
   * @param     アサーションを表す String
   */
   public void addAssertion(String theAssertion){
-    LogArea.println("ADD:"+theAssertion);
+    System.out.println("ADD:"+theAssertion);
     assertions.add(theAssertion);
   }
 
@@ -150,19 +174,19 @@ class RuleBase {
 
   RuleBase(){
     Scanner scan = new Scanner(System.in);
-    LogArea.print("Enter data-filename:"); // ファイル名の入力
+    System.out.print("Enter data-filename:"); // ファイル名の入力
     fileName = scan.nextLine();
     wm = new WorkingMemory();
     fm = new FileManager();
 
-    LogArea.print("Enter workingmemory-filename:");
+    System.out.print("Enter workingmemory-filename:");
     dataFilename = scan.nextLine();
     ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
     for(String str : wms){
       wm.addAssertion(str);
     }
     /*    while(true){
-    LogArea.print("Enter add-assertion:");
+    System.out.print("Enter add-assertion:");
     String as = scan.nextLine();
     if(as.equals("exit")){
     break;
@@ -186,7 +210,7 @@ public void forwardChain(){
     newAssertionCreated = false;
     for(int i = 0 ; i < rules.size(); i++){
       Rule aRule = (Rule)rules.get(i);
-      LogArea.println("apply rule:"+aRule.getName());
+      System.out.println("apply rule:"+aRule.getName());
       ArrayList<String> antecedents = aRule.getAntecedents();
       String consequent  = aRule.getConsequent();
       //HashMap bindings = wm.matchingAssertions(antecedents);
@@ -199,17 +223,17 @@ public void forwardChain(){
           (HashMap)bindings.get(j));
           //ワーキングメモリーになければ成功
           if(!wm.contains(newAssertion)){
-            LogArea.println("Success: "+newAssertion);
+            System.out.println("Success: "+newAssertion);
             wm.addAssertion(newAssertion);
             newAssertionCreated = true;
           }
         }
       }
     }
-    LogArea.println("Working Memory"+wm);
+    System.out.println("Working Memory"+wm);
   } while(newAssertionCreated);
-  LogArea.println("No rule produces a new assertion");
-  LogArea.println();
+  System.out.println("No rule produces a new assertion");
+  System.out.println();
 }
 
 private String instantiate(String thePattern, HashMap theBindings){
@@ -232,35 +256,28 @@ private boolean var(String str1){
 }
 
 //追加箇所
-void addRules(){
-  String name = null;
-  ArrayList<String> antecedents = null;
-  String consequent = null;
+void addRules(String name,ArrayList<String> antecedents,String consequent){
+  //String name = null;
+  //ArrayList<String> antecedents = null;
+  //String consequent = null;
 
-  Scanner scan = new Scanner(System.in);
-  LogArea.println("--- Add Rule !!! ---");
-  LogArea.print("Enter RuleName:");
+  //Scanner scan = new Scanner(System.in);
+/*  System.out.print("Enter RuleName:");
   name = scan.nextLine();
-  LogArea.print("Enter antecedent:");
+  System.out.print("Enter antecedent:");
   antecedents = new ArrayList<>();
   while(true){
     String a = scan.nextLine();
     if(a.equals("finish")) break;
     antecedents.add(a);
   }
-  LogArea.print("Enter consequent:");
-  consequent = scan.nextLine();
+  System.out.print("Enter consequent:");
+  consequent = scan.nextLine();           */
 
   rules.add(new Rule(name,antecedents,consequent));
 }
 
-void deleteRules(){
-  Scanner scan = new Scanner(System.in);
-  String name = null;
-
-  LogArea.println("--- Delete Rule !!! ---");
-  LogArea.print("Enter RuleName:");
-  name = scan.nextLine();
+void deleteRules(String name){
   for(int i=0; i<rules.size();i++){
     if(rules.get(i).getName().equals(name)){
       rules.remove(i);
@@ -268,6 +285,13 @@ void deleteRules(){
     }
   }
 }
+
+
+
+
+
+
+
 
 private void loadRules(String theFileName){
   String line;
@@ -304,15 +328,15 @@ private void loadRules(String theFileName){
         rules.add(new Rule(name,antecedents,consequent));
         break;
         default:
-        LogArea.println(token);
+        System.out.println(token);
         break;
       }
     }
   } catch(Exception e){
-    LogArea.println(e);
+    System.out.println(e);
   }
   for(int i = 0 ; i < rules.size() ; i++){
-    LogArea.println(((Rule)rules.get(i)).toString());
+    System.out.println(((Rule)rules.get(i)).toString());
   }
 }
 }
@@ -386,8 +410,8 @@ class Matcher {
   }
 
   public boolean matching(String string1,String string2){
-    //LogArea.println(string1);
-    //LogArea.println(string2);
+    //System.out.println(string1);
+    //System.out.println(string2);
 
     // 同じなら成功
     if(string1.equals(string2)) return true;
@@ -412,7 +436,7 @@ class Matcher {
   }
 
   boolean tokenMatching(String token1,String token2){
-    //LogArea.println(token1+"<->"+token2);
+    //System.out.println(token1+"<->"+token2);
     if(token1.equals(token2)) return true;
     if( var(token1) && !var(token2)) return varMatching(token1,token2);
     if(!var(token1) &&  var(token2)) return varMatching(token2,token1);
@@ -477,12 +501,12 @@ class FileManager {
           new Rule(name,antecedents,consequent));
           break;
           default:
-          LogArea.println(token);
+          System.out.println(token);
           break;
         }
       }
     } catch(Exception e){
-      LogArea.println(e);
+      System.out.println(e);
     }
     return rules;
   }
@@ -508,7 +532,7 @@ class FileManager {
         wm.add(line.trim());
       }
     } catch(Exception e){
-      LogArea.println(e);
+      System.out.println(e);
     }
     return wm;
   }
@@ -533,8 +557,8 @@ class Unifier {
   }
 
   public boolean unify(String string1,String string2){
-    //LogArea.println(string1);
-    //LogArea.println(string2);
+    //System.out.println(string1);
+    //System.out.println(string2);
 
     // 同じなら成功
     if(string1.equals(string2)) return true;
@@ -562,7 +586,7 @@ class Unifier {
 
 
     // 最後まで O.K. なら成功
-    LogArea.println(vars.toString());
+    System.out.println(vars.toString());
     return true;
   }
 

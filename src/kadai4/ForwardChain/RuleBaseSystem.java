@@ -1,8 +1,5 @@
 package kadai4.ForwardChain;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import GUI.LogArea;
 import kadai4.FileManager;
 import kadai4.Rule;

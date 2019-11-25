@@ -10,7 +10,7 @@ public class RuleBaseSystem {
   public static void main(String args[]){
     Scanner stdIn = new Scanner(System.in);
     rb = new RuleBase();
-    System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
+    LogArea.print("add rule? delete rule? add...1/delete...2/No thanks...3 :");
     int j = stdIn.nextInt();
     switch(j){
       case 1:
@@ -24,7 +24,7 @@ public class RuleBaseSystem {
     }
     rb.forwardChain();
     while(true){
-      System.out.print("Enter Search Pattern:");
+      LogArea.print("Enter Search Pattern:");
       String query = stdIn.nextLine();
       if(query.equals("exit")){
         break;
@@ -108,7 +108,7 @@ class WorkingMemory {
   * @param     アサーションを表す String
   */
   public void addAssertion(String theAssertion){
-    System.out.println("ADD:"+theAssertion);
+    LogArea.println("ADD:"+theAssertion);
     assertions.add(theAssertion);
   }
 
@@ -150,19 +150,19 @@ class RuleBase {
 
   RuleBase(){
     Scanner scan = new Scanner(System.in);
-    System.out.print("Enter data-filename:"); // ファイル名の入力
+    LogArea.print("Enter data-filename:"); // ファイル名の入力
     fileName = scan.nextLine();
     wm = new WorkingMemory();
     fm = new FileManager();
 
-    System.out.print("Enter workingmemory-filename:");
+    LogArea.print("Enter workingmemory-filename:");
     dataFilename = scan.nextLine();
     ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
     for(String str : wms){
       wm.addAssertion(str);
     }
     /*    while(true){
-    System.out.print("Enter add-assertion:");
+    LogArea.print("Enter add-assertion:");
     String as = scan.nextLine();
     if(as.equals("exit")){
     break;
@@ -186,7 +186,7 @@ public void forwardChain(){
     newAssertionCreated = false;
     for(int i = 0 ; i < rules.size(); i++){
       Rule aRule = (Rule)rules.get(i);
-      System.out.println("apply rule:"+aRule.getName());
+      LogArea.println("apply rule:"+aRule.getName());
       ArrayList<String> antecedents = aRule.getAntecedents();
       String consequent  = aRule.getConsequent();
       //HashMap bindings = wm.matchingAssertions(antecedents);
@@ -199,17 +199,17 @@ public void forwardChain(){
           (HashMap)bindings.get(j));
           //ワーキングメモリーになければ成功
           if(!wm.contains(newAssertion)){
-            System.out.println("Success: "+newAssertion);
+            LogArea.println("Success: "+newAssertion);
             wm.addAssertion(newAssertion);
             newAssertionCreated = true;
           }
         }
       }
     }
-    System.out.println("Working Memory"+wm);
+    LogArea.println("Working Memory"+wm);
   } while(newAssertionCreated);
-  System.out.println("No rule produces a new assertion");
-  System.out.println();
+  LogArea.println("No rule produces a new assertion");
+  LogArea.println();
 }
 
 private String instantiate(String thePattern, HashMap theBindings){
@@ -238,17 +238,17 @@ void addRules(){
   String consequent = null;
 
   Scanner scan = new Scanner(System.in);
-  System.out.println("--- Add Rule !!! ---");
-  System.out.print("Enter RuleName:");
+  LogArea.println("--- Add Rule !!! ---");
+  LogArea.print("Enter RuleName:");
   name = scan.nextLine();
-  System.out.print("Enter antecedent:");
+  LogArea.print("Enter antecedent:");
   antecedents = new ArrayList<>();
   while(true){
     String a = scan.nextLine();
     if(a.equals("finish")) break;
     antecedents.add(a);
   }
-  System.out.print("Enter consequent:");
+  LogArea.print("Enter consequent:");
   consequent = scan.nextLine();
 
   rules.add(new Rule(name,antecedents,consequent));
@@ -258,8 +258,8 @@ void deleteRules(){
   Scanner scan = new Scanner(System.in);
   String name = null;
 
-  System.out.println("--- Delete Rule !!! ---");
-  System.out.print("Enter RuleName:");
+  LogArea.println("--- Delete Rule !!! ---");
+  LogArea.print("Enter RuleName:");
   name = scan.nextLine();
   for(int i=0; i<rules.size();i++){
     if(rules.get(i).getName().equals(name)){
@@ -304,15 +304,15 @@ private void loadRules(String theFileName){
         rules.add(new Rule(name,antecedents,consequent));
         break;
         default:
-        System.out.println(token);
+        LogArea.println(token);
         break;
       }
     }
   } catch(Exception e){
-    System.out.println(e);
+    LogArea.println(e);
   }
   for(int i = 0 ; i < rules.size() ; i++){
-    System.out.println(((Rule)rules.get(i)).toString());
+    LogArea.println(((Rule)rules.get(i)).toString());
   }
 }
 }
@@ -386,8 +386,8 @@ class Matcher {
   }
 
   public boolean matching(String string1,String string2){
-    //System.out.println(string1);
-    //System.out.println(string2);
+    //LogArea.println(string1);
+    //LogArea.println(string2);
 
     // 同じなら成功
     if(string1.equals(string2)) return true;
@@ -412,7 +412,7 @@ class Matcher {
   }
 
   boolean tokenMatching(String token1,String token2){
-    //System.out.println(token1+"<->"+token2);
+    //LogArea.println(token1+"<->"+token2);
     if(token1.equals(token2)) return true;
     if( var(token1) && !var(token2)) return varMatching(token1,token2);
     if(!var(token1) &&  var(token2)) return varMatching(token2,token1);
@@ -477,12 +477,12 @@ class FileManager {
           new Rule(name,antecedents,consequent));
           break;
           default:
-          System.out.println(token);
+          LogArea.println(token);
           break;
         }
       }
     } catch(Exception e){
-      System.out.println(e);
+      LogArea.println(e);
     }
     return rules;
   }
@@ -508,7 +508,7 @@ class FileManager {
         wm.add(line.trim());
       }
     } catch(Exception e){
-      System.out.println(e);
+      LogArea.println(e);
     }
     return wm;
   }
@@ -533,8 +533,8 @@ class Unifier {
   }
 
   public boolean unify(String string1,String string2){
-    //System.out.println(string1);
-    //System.out.println(string2);
+    //LogArea.println(string1);
+    //LogArea.println(string2);
 
     // 同じなら成功
     if(string1.equals(string2)) return true;
@@ -562,7 +562,7 @@ class Unifier {
 
 
     // 最後まで O.K. なら成功
-    System.out.println(vars.toString());
+    LogArea.println(vars.toString());
     return true;
   }
 

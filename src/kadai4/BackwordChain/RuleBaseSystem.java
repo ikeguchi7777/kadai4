@@ -332,7 +332,10 @@ class FileManager {
       while((token = st.nextToken())!= StreamTokenizer.TT_EOF){
         line = new String();
         while( token != StreamTokenizer.TT_EOL){
-          line = line + st.sval + " ";
+          if(st.sval == null)
+            line = line + (int)st.nval + " ";
+          else
+            line = line + st.sval + " ";
           token = st.nextToken();
         }
         wm.add(line.trim());

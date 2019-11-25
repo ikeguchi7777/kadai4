@@ -11,10 +11,18 @@ public class RuleBaseSystem {
     String name;
     ArrayList<String> antecedents;
     String consequent;
+    String fileName;
+    String dataFilename;
 
     Scanner stdIn = new Scanner(System.in);
     Scanner scan = new Scanner(System.in);
-    rb = new RuleBase();
+
+    //Scanner scan = new Scanner(System.in);
+    System.out.print("Enter data-filename:"); // ファイル名の入力
+    fileName = scan.nextLine();
+    System.out.print("Enter workingmemory-filename:");
+    dataFilename = scan.nextLine();
+    rb = new RuleBase(fileName,dataFilename);
     System.out.print("add rule? delete rule? add...1/delete...2/No thanks...3 : ");
     int j = stdIn.nextInt();
 
@@ -23,6 +31,15 @@ public class RuleBaseSystem {
       System.out.println("--- Add Rule !!! ---");
       System.out.print("Enter RuleName:");
       name = scan.nextLine();
+      while(true){
+        if(rb.judgeName(name)){
+          System.out.println("That rulename is already exist");
+          System.out.print("Enter other rulename : ");
+          name = scan.nextLine();
+        }else{
+          break;
+        }
+      }
       System.out.print("Enter antecedent:");
       antecedents = new ArrayList<>();
       while(true){
@@ -172,15 +189,15 @@ class RuleBase {
   ArrayList<Rule> rules;
   static FileManager fm;
 
-  RuleBase(){
-    Scanner scan = new Scanner(System.in);
+  RuleBase(String fileName,String dataFilename){
+    /*Scanner scan = new Scanner(System.in);
     System.out.print("Enter data-filename:"); // ファイル名の入力
-    fileName = scan.nextLine();
+    fileName = scan.nextLine();*/
     wm = new WorkingMemory();
     fm = new FileManager();
 
-    System.out.print("Enter workingmemory-filename:");
-    dataFilename = scan.nextLine();
+    /*System.out.print("Enter workingmemory-filename:");
+    dataFilename = scan.nextLine();*/
     ArrayList<String> wms = fm.loadWm(dataFilename); //ワーキングメモリの取り込み
     for(String str : wms){
       wm.addAssertion(str);
@@ -257,24 +274,7 @@ private boolean var(String str1){
 
 //追加箇所
 void addRules(String name,ArrayList<String> antecedents,String consequent){
-  //String name = null;
-  //ArrayList<String> antecedents = null;
-  //String consequent = null;
-
-  //Scanner scan = new Scanner(System.in);
-/*  System.out.print("Enter RuleName:");
-  name = scan.nextLine();
-  System.out.print("Enter antecedent:");
-  antecedents = new ArrayList<>();
-  while(true){
-    String a = scan.nextLine();
-    if(a.equals("finish")) break;
-    antecedents.add(a);
-  }
-  System.out.print("Enter consequent:");
-  consequent = scan.nextLine();           */
-
-  rules.add(new Rule(name,antecedents,consequent));
+rules.add(new Rule(name,antecedents,consequent));
 }
 
 void deleteRules(String name){
@@ -286,7 +286,22 @@ void deleteRules(String name){
   }
 }
 
-
+boolean judgeName(String name){
+  boolean judge = true;
+  while(true){
+    for(int i=0; i<rules.size();i++){
+      if(rules.get(i).getName().equals(name)){
+        judge = true;
+        break;
+      }else{
+        judge = false;
+        break;
+      }
+    }
+    break;
+  }
+  return judge;
+}
 
 
 
@@ -524,9 +539,9 @@ class FileManager {
         line = new String();
         while( token != StreamTokenizer.TT_EOL){
           if(st.sval == null)
-            line = line + (int)st.nval + " ";
+          line = line + (int)st.nval + " ";
           else
-            line = line + st.sval + " ";
+          line = line + st.sval + " ";
           token = st.nextToken();
         }
         wm.add(line.trim());

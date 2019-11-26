@@ -24,7 +24,7 @@ class ForwardSearchPanel extends PagePanelBase {
 	public ForwardSearchPanel(String name, kadai4.ForwardChain.RuleBaseSystem rbs) {
 		super(name);
 		JPanel panel = new JPanel();
-		JLabel label = new JLabel("英文で質問してください");
+		JLabel label = new JLabel("クエリで質問してください");
 		JTextField text1 = new JTextField(100);
 		JButton button = new JButton("検索");
 		panel.add(text1);
@@ -49,7 +49,7 @@ class BackwardSearchPanel extends PagePanelBase {
 	public BackwardSearchPanel(String name, kadai4.BackwordChain.RuleBaseSystem rbs) {
 		super(name);
 		JPanel panel = new JPanel();
-		JLabel label = new JLabel("英文で質問してください");
+		JLabel label = new JLabel("クエリで質問してください");
 		JTextField text1 = new JTextField(100);
 		JButton button = new JButton("検索");
 		panel.add(text1);

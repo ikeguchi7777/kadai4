@@ -1,5 +1,8 @@
 package kadai4.ForwardChain;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import GUI.LogArea;
 import kadai4.FileManager;
 import kadai4.Rule;
@@ -21,7 +24,7 @@ public class RuleBaseSystem {
 
 		Scanner scan = new Scanner(System.in);
 		FileManager fm = new FileManager();
-		
+
 		LogArea.print("Enter data-filename:");
 		String datafilename = scan.nextLine();
 		LogArea.print("Enter workingmemory-filename:");
@@ -31,7 +34,7 @@ public class RuleBaseSystem {
 		WorkingMemory wm = new WorkingMemory(fm.loadWm(wmfilename));
 		//ArrayList wm    = fm.loadWm("AnimalWorldWm.data");
 		RuleBaseSystem rbs = new RuleBaseSystem(new RuleBase(rules,wm));
-		
+
 		while (true) {
 			System.out.print("Enter Search Pattern:");
 			String query = scan.nextLine();
@@ -41,11 +44,11 @@ public class RuleBaseSystem {
 			rbs.patternSearch(query);
 		}
 	}
-	
+
 	public RuleBaseSystem(RuleBase rb) {
 		this.rb=rb;
 	}
-	
+
 	public void patternSearch(String pattern) {
 		rb.forwardChain();
 		for (String st : rb.forwardWM.assertions) {

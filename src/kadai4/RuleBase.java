@@ -258,7 +258,8 @@ public class RuleBase {
 	}
 	
 	public void deleteAssertion(String assertion) {
-		wm.assertions.remove(assertion);
+		if(wm.assertions.remove(assertion))
+			LogArea.println("Delete:"+assertion);
 	}
 
 	public void addRules(List<Rule> rules) {

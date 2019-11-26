@@ -1,0 +1,136 @@
+\documentclass{jarticle}
+
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{listings,jlisting}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+
+%ここからソースコードの表示に関する設定
+\lstset{
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    commentstyle={\smallitshape},
+    keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    numbers=left,
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    numberstyle={\scriptsize},
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
+}
+%ここまでソースコードの表示に関する設定 
+
+\title{知能プログラミング演習II 課題4}
+\author{グループ07\\
+    29114031 大原 拓人\\
+%  {\small (グループレポートの場合は、グループ名および全員の学生番号と氏名が必要)}
+}
+\date{2019年11月19日}
+
+\begin{document}
+\maketitle
+
+\paragraph{提出物} 個人レポート、グループプログラム「group07.zip」
+\paragraph{グループ} グループ07
+\paragraph{メンバー}
+\begin{tabular}{|c|c|c|}
+    \hline
+    学生番号&氏名&貢献度比率\\
+    \hline\hline
+    29114007&池口弘尚&0\\
+    \hline
+    29114031&大原拓人&0\\
+    \hline
+    29114048&北原太一&0\\
+    \hline
+    29114086&飛世裕貴&0\\
+    \hline
+    29114095&野竹浩二朗&0\\
+    \hline
+\end{tabular}
+
+\section{課題の説明}
+\begin{description}
+    \item[必須課題4-1] まず，教科書3.2.1の「前向き推論」のプログラムと教科書3.2.2の
+    「後向き推論」のプログラムとの動作確認をし，前向き推論と後ろ向き推論の違いを説明せよ．
+    また，実行例を示してルールが選択される過程を説明せよ．説明の際には，LibreOfficeの
+    Draw（コマンド soffice --draw）などのドロー系ツールを使ってp.106 図3.11や
+    p.118 図3.12のような図として示すことが望ましい．
+    \item[必須課題4-2] CarShop.data , AnimalWorld.data 等のデータファイルを
+    実際的な応用事例（自分達の興味分野で良い）に書き換えて，前向き推論，
+    および後ろ向き推論に基づく質問応答システムを作成せよ．どのような応用事例を扱うかは，メンバーで話し合って決めること．
+    なお，ユーザの質問は英語や日本語のような自然言語が望ましいが，難しければ変数を含むパターン等でも可とする．
+    \item[必須課題4-3] 上記4-2で実装した質問応答システムのGUIを作成せよ．
+    質問に答える際の推論過程を可視化できることが望ましい．
+    \item[発展課題4-4] 上記4-3で実装したGUIを発展させ，質問応答だけでなく，
+    ルールの編集（追加，削除，変更）などについてもGUIで行えるようにせよ．
+\end{description}
+
+
+\section{課題4-1}
+\begin{screen}
+    まず，教科書3.2.1の「前向き推論」のプログラムと教科書3.2.2の
+    「後向き推論」のプログラムとの動作確認をし，前向き推論と後ろ向き推論の違いを説明せよ．
+    また，実行例を示してルールが選択される過程を説明せよ．説明の際には，LibreOfficeの
+    Draw（コマンド soffice --draw）などのドロー系ツールを使ってp.106 図3.11や
+    p.118 図3.12のような図として示すことが望ましい．
+\end{screen}
+\subsection{手法}
+    
+\subsection{実装}
+    
+\subsection{考察}
+    
+\section{課題4-2}
+\begin{screen}
+    CarShop.data , AnimalWorld.data 等のデータファイルを
+    実際的な応用事例（自分達の興味分野で良い）に書き換えて，前向き推論，
+    および後ろ向き推論に基づく質問応答システムを作成せよ．どのような応用事例を扱うかは，メンバーで話し合って決めること．
+    なお，ユーザの質問は英語や日本語のような自然言語が望ましいが，難しければ変数を含むパターン等でも可とする．
+\end{screen}
+    私は自然言語（英語）によって質問を解釈する質問応答システムを担当した。
+\subsection{手法}
+    OpenNLPのライブラリを利用し、入力した英文とデータベースの英文
+    を文節に分けて、比較しやすいようにする。
+\subsection{実装}
+    まず、文節に分けられたことがわかるように、与えられた文章を文節で
+    区切ったものを出力するgetChunklistメソッドをSentenceクラスに作成した。
+
+\begin{lstlisting}[caption=Sentence.java]
+    String getChunklist(){
+		String result = "";
+		for (Chunk chunk : this) {
+			result+="".concat("/").concat(chunk.getMorphemes());
+		}
+		return result;
+	}
+\end{lstlisting}
+    getMorphemesメソッドは以下のようになっている。
+\begin{lstlisting}[caption=Chunk.java]
+    public String getMorphemes(){
+		String line = "";
+		for (Morpheme word : Chunk.this) {
+			line+="".concat(word.getWord()).concat(" ");
+		}
+        return line;
+    }
+\end{lstlisting}
+
+\subsection{考察}
+    
+
+\section{感想}
+
+% 参考文献
+\begin{thebibliography}{99}
+    \bibitem{opennlp} ホームページtutorialspoint内の「OpenNLP」
+\end{thebibliography}
+
+\end{document}
